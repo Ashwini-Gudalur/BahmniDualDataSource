@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+    <!-- define a custom data source -->
+    <bean id="bahmniDualDataSource" class="com.jaspersoft.jasperserver.api.engine.jasperreports.util.CustomDataSourceDefinition">
+        <!-- this prop is always the same; it registers the custom ds -->
+        <property name="factory" ref="customDataSourceServiceFactory"/>
+        <!-- name used in message catalog and elsewhere -->
+        <property name="name" value="bahmniDualDataSource"/>
+        <!-- class name of implementation -->
+        <property name="serviceClassName" value="org.bahmni.custom.BahmniDualDataSourceService"/>
+        <!-- instance of validator (optional)
+             must implement com.jaspersoft.jasperserver.api.engine.jasperreports.util.CustomDataSourceValidator-->
+        <property name="validator">
+            <bean class="org.bahmni.custom.BahmniDualDataSourceValidator"/>
+        </property>
+
+        <!-- definitions of properties passed to ds service instance -->
+        <property name="propertyDefinitions">
+            <list>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="erpDriver"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="erpConnectionUrl"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="erpUser"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="erpPassword"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="mrsDriver"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="mrsConnectionUrl"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="mrsUser"/>
+                </map>
+                <map>
+                    <!-- name of bean that has session factory -->
+                    <entry key="name" value="mrsPassword"/>
+                </map>
+            </list>
+        </property>
+        <property name="queryExecuterMap">
+            <map>
+                <entry key="bahmniReport" value="org.bahmni.custom.BahmniDualDataSourceQueryExecuterFactory"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- add your message catalog -->
+    <bean class="com.jaspersoft.jasperserver.api.common.util.spring.GenericBeanUpdater">
+        <property name="definition" ref="addMessageCatalog"/>
+        <property name="value">
+            <list>
+                <value>WEB-INF/bundles/bahmnidualds</value>
+            </list>
+        </property>
+        <property name="valueType" value="stringList"/>
+    </bean>
+
+</beans>
