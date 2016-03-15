@@ -1,10 +1,13 @@
 package org.bahmni.custom;
 
 import org.bahmni.custom.data.BahmniReportObject;
+import org.bahmni.custom.data.DepartmentReport;
+import org.bahmni.custom.data.ReportLine;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -109,4 +112,38 @@ public abstract class AbstractBahmniReport{
     protected final void releaseConnection(Connection con) {
         DataSourceUtils.releaseConnection(con, this.getDataSource());
     }*/
+
+    protected List<ReportLine> convert(List<DepartmentReport> daybook) {
+        List<ReportLine> out = new ArrayList<ReportLine>();
+        for (DepartmentReport departmentReport : daybook) {
+            ReportLine line = new ReportLine();
+            line.setDepartment(departmentReport.getDepartment());
+            DepartmentReport.ReportLine nonTribal = departmentReport.getNonTribal();
+            if (nonTribal!=null){
+                line.setBillAmountNonTribal(nonTribal.getTotalAmount());
+                line.setPaidAmountNonTribal(nonTribal.getCollected());
+                line.setRefundAmountNonTribal(nonTribal.getRefundAmount());
+                line.setTotalCharityNonTribal(nonTribal.getCharity());
+                line.setTotalDueNonTribal(nonTribal.getDueAmount());
+            }
+            DepartmentReport.ReportLine tribal = departmentReport.getTribal();
+            if (tribal!=null){
+                line.setBillAmountTribal(tribal.getTotalAmount());
+                line.setPaidAmountTribal(tribal.getCollected());
+                line.setRefundAmountTribal(tribal.getRefundAmount());
+                line.setTotalCharityTribal(tribal.getCharity());
+                line.setTotalDueTribal(tribal.getDueAmount());
+            }
+            DepartmentReport.ReportLine total = departmentReport.getTotal();
+            if (total!=null){
+                line.setBillTotal(total.getTotalAmount());
+                line.setCharityTotal(total.getCharity());
+                line.setCollectedTotal(total.getCollected());
+                line.setDueTotal(total.getDueAmount());
+                line.setRefundTotal(total.getRefundAmount());
+            }
+            out.add(line);
+        }
+        return out;
+    }
 }

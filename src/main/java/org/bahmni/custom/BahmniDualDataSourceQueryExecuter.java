@@ -21,16 +21,18 @@
 
 package org.bahmni.custom;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.fill.JRFillParameter;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author bob
@@ -38,6 +40,7 @@ import javax.sql.DataSource;
  */
 public class BahmniDualDataSourceQueryExecuter extends JRAbstractQueryExecuter {
 
+	private final Map<String, ?> reportParametrsMap;
 	private String path;
 	private String url;
 
@@ -47,6 +50,13 @@ public class BahmniDualDataSourceQueryExecuter extends JRAbstractQueryExecuter {
 	 */
 	public BahmniDualDataSourceQueryExecuter(JRDataset dataset, Map parameters) {
 		super(dataset, parameters);
+		JRFillParameter fillparam = (JRFillParameter) parameters.get(JRParameter.REPORT_PARAMETERS_MAP);
+		System.out.println(fillparam);
+		System.out.println("Sande"+fillparam.getValue());
+		reportParametrsMap = (Map) fillparam.getValue();
+		System.out.println(reportParametrsMap);
+		JRFillParameter o = (JRFillParameter) parameters.get(JRParameter.REPORT_DATA_SOURCE);
+		System.out.println(o.getValue());
 		parseQuery();
 	}
 
@@ -71,14 +81,14 @@ public class BahmniDualDataSourceQueryExecuter extends JRAbstractQueryExecuter {
 	 */
 	public JRDataSource createDatasource() throws JRException {
 		String[] qarray = getQueryString().trim().split(" ");
-		Map<String,String> args = new HashMap<String, String>();
+		Date from_date = (Date) reportParametrsMap.get("from_date");
+		Date to_date = (Date) reportParametrsMap.get("to_date");
+
+		Map<String,Object> args = new HashMap<String, Object>();
 		args.put(BahmniDualDataSource.REPORT_CLASS,qarray[0]);
-		if (qarray.length > 1) {
-			args.put(BahmniDualDataSource.START_DATE,qarray[1]);
-		}
-		if (qarray.length > 2) {
-			args.put(BahmniDualDataSource.END_DATE,qarray[2]);
-		}
+		args.put(BahmniDualDataSource.START_DATE,from_date);
+		args.put(BahmniDualDataSource.END_DATE,to_date);
+		args.putAll(reportParametrsMap);
 		return new BahmniDualDataSource(createErpDataSource(), createMrsDataSource(), args);
 	}
 
@@ -91,8 +101,8 @@ public class BahmniDualDataSourceQueryExecuter extends JRAbstractQueryExecuter {
 	}
 	private String erpDriver="org.postgresql.Driver";
 	private String mrsDriver="com.mysql.jdbc.Driver";
-	private String erpConnectionUrl="jdbc:postgresql://192.168.57.103:5432/openerp";
-	private String mrsConnectionUrl="jdbc:mysql://192.168.57.103:3306/openmrs";
+	private String erpConnectionUrl="jdbc:postgresql://localhost:5432/openerp";
+	private String mrsConnectionUrl="jdbc:mysql://localhost:3306/openmrs";
 	private String erpUser="openerp";
 	private String mrsUser="openmrs-user";
 	private String erpPassword="";

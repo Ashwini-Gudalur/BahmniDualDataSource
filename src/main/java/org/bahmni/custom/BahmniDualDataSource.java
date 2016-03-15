@@ -67,10 +67,10 @@ public class BahmniDualDataSource implements JRDataSource {
 		}
 		try {
 			String reportClass = (String)params.get(REPORT_CLASS);
-			Date startDate = Util.getFormattedDate((String) params.get(START_DATE));
-			Date endDate = Util.getFormattedDate((String) params.get(END_DATE));
+			Date startDate = (Date) params.get(START_DATE);
+			Date endDate = (Date) params.get(END_DATE);
 			Class<?> clazz = Class.forName(reportClass);
-			Object classInstance = Util.getObjectFromClassName(reportClass);
+			Object classInstance = Utils.getObjectFromClassName(reportClass);
 			AbstractBahmniReport report = (AbstractBahmniReport) classInstance;
 			report.setErpDS(erpDS);
 			report.setEmrDS(emrDS);

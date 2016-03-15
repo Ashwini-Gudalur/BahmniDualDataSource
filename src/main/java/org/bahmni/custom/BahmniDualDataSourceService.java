@@ -48,6 +48,22 @@ public class BahmniDualDataSourceService implements ReportDataSourceService {
 	private DataSource erpDataSource;
 	private DataSource mrsDataSource;
 
+	@Override
+	public String toString() {
+		return "BahmniDualDataSourceService{" +
+				"erpDriver='" + erpDriver + '\'' +
+				", mrsDriver='" + mrsDriver + '\'' +
+				", erpConnectionUrl='" + erpConnectionUrl + '\'' +
+				", mrsConnectionUrl='" + mrsConnectionUrl + '\'' +
+				", erpUser='" + erpUser + '\'' +
+				", mrsUser='" + mrsUser + '\'' +
+				", erpPassword='" + erpPassword + '\'' +
+				", mrsPassword='" + mrsPassword + '\'' +
+				", erpDataSource=" + erpDataSource +
+				", mrsDataSource=" + mrsDataSource +
+				'}';
+	}
+
 	public String getErpDriver() {
 		return erpDriver;
 	}

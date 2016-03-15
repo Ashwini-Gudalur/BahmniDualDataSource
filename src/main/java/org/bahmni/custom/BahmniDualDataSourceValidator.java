@@ -38,35 +38,25 @@ public class BahmniDualDataSourceValidator implements CustomDataSourceValidator 
 	/* check the values in the map; call rejectValue if tests don't pass
 	 */
 	public void validatePropertyValues(CustomReportDataSource ds, Errors errors) {
-		String startDate = null;
-		String endDate = null;
+		Date startDate = null;
+		Date endDate = null;
 		String reportClass = null;
 		Map props = ds.getPropertyMap();
 		if (props != null) {
 			reportClass = (String) ds.getPropertyMap().get(BahmniDualDataSource.REPORT_CLASS);
-			startDate = (String) ds.getPropertyMap().get(BahmniDualDataSource.START_DATE);
-			endDate = (String) ds.getPropertyMap().get(BahmniDualDataSource.END_DATE);
+			startDate = (Date) ds.getPropertyMap().get(BahmniDualDataSource.START_DATE);
+			endDate = (Date) ds.getPropertyMap().get(BahmniDualDataSource.END_DATE);
 		}
-		if (startDate == null || startDate.length() == 0) {
+		if (startDate == null) {
 			reject(errors, BahmniDualDataSource.START_DATE, "startDate");
-		}else {
-			Date formattedDate = Util.getFormattedDate(startDate, "dd-MM-yyyy");
-			if (formattedDate==null){
-				reject(errors, BahmniDualDataSource.START_DATE, "startDate: format error, required format: dd-MM-yyyy input:"+startDate);
-			}
 		}
-		if (endDate == null || endDate.length() == 0) {
+		if (endDate == null) {
 			reject(errors, BahmniDualDataSource.END_DATE, "endDate");
-		}else {
-			Date formattedDate = Util.getFormattedDate(endDate, "dd-MM-yyyy");
-			if (formattedDate==null){
-				reject(errors, BahmniDualDataSource.END_DATE, "endDate: format error, required format: dd-MM-yyyy  input:"+endDate);
-			}
 		}
 		if (reportClass == null || reportClass.length() == 0) {
 			reject(errors, BahmniDualDataSource.REPORT_CLASS, "reportClass");
 		}else{
-			Object objectFromClassName = Util.getObjectFromClassName(reportClass);
+			Object objectFromClassName = Utils.getObjectFromClassName(reportClass);
 			if (objectFromClassName==null){
 				reject(errors,BahmniDualDataSource.REPORT_CLASS, "Unable to instantinate class:"+reportClass);
 			}
