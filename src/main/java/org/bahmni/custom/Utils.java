@@ -89,4 +89,9 @@ public class Utils {
     public static boolean isEmptyList(List list) {
         return list == null || list.size() == 0;
     }
+
+    public static boolean isEmptyString(String departmentForSO) {
+        return departmentForSO==null || departmentForSO.length()==0 || departmentForSO.trim().length()==0;
+    }
+
 }

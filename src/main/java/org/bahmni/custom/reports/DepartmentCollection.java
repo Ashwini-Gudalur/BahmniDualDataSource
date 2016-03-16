@@ -7,10 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by sandeepe on 15/03/16.
@@ -48,7 +45,15 @@ public class DepartmentCollection extends AbstractBahmniReport{
                 return so;
             }
         });
-        String deptQuery = "select department_name,category_id from syncjob_department_category_mapping";
+
+        String department = (String) getParams().get("department");
+        if (!Utils.isEmptyString(department)){
+            department= " where department_name='"+department+"'";
+        }else {
+            department = "";
+        }
+
+        String deptQuery = "select department_name,category_id from syncjob_department_category_mapping "+department;
         final Map<String,List<Integer>> deptCatMap = new HashMap<String, List<Integer>>();
         getErpJdbcTemplate().query(deptQuery, new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
@@ -173,6 +178,9 @@ public class DepartmentCollection extends AbstractBahmniReport{
         Map<String,List<SaleOrder>> departmentSOMap = new HashMap<String, List<SaleOrder>>();
         for (SaleOrder saleOrderIntegerEntry : saleOrderCatMap) {
             String departmentForSO = getDepartmentForSO(saleOrderIntegerEntry, deptCatMap);
+            if (Utils.isEmptyString(departmentForSO)){
+                continue;
+            }
             List<SaleOrder> catList = departmentSOMap.get(departmentForSO);
             if (catList==null){
                 catList=new ArrayList<SaleOrder>();
