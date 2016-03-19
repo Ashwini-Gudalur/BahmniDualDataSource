@@ -121,11 +121,11 @@ public class DayBook extends AbstractBahmniReport {
                     stringAmountMap.put(billed, amt);
                 }
                 if (Boolean.valueOf(resultSet.getString(3))) {
-                    double currValue = amt.getNonTribal();
-                    amt.setTribal(resultSet.getDouble(1)+currValue);
-                } else {
                     double currValue = amt.getTribal();
-                    amt.setNonTribal(resultSet.getDouble(1)+currValue);
+                    amt.setTribal(resultSet.getDouble(1) + currValue);
+                } else {
+                    double currValue = amt.getNonTribal();
+                    amt.setNonTribal(resultSet.getDouble(1) + currValue);
                 }
                 amt.setShopId(resultSet.getInt(2));
                 amt.setShopName(shopName);
