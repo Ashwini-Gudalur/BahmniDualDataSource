@@ -16,6 +16,9 @@ import java.util.*;
  * Created by sandeepe on 14/03/16.
  */
 public class DayBook extends AbstractBahmniReport {
+
+    private String CASHPOINT_PREFIX = "CashPoint";
+
     @Override
     public List<ReportLine> getReportData() {
         List<DepartmentReport> daybook = getDaybook();
@@ -101,10 +104,12 @@ public class DayBook extends AbstractBahmniReport {
     }
 
     private void setAmount(String billedAmountQuery, final AMOUNT_TYPE billed, final Map<String, EnumMap<AMOUNT_TYPE, Amount>> storeAmountMap) {
-
         getErpJdbcTemplate().query(billedAmountQuery, new Object[]{getStartDate(),getEndDate()},new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
                 String shopName = resultSet.getString(4);
+                if (shopName.toLowerCase().startsWith(CASHPOINT_PREFIX.toLowerCase())){
+                    shopName = CASHPOINT_PREFIX;
+                }
                 EnumMap<AMOUNT_TYPE, Amount> stringAmountMap = storeAmountMap.get(shopName);
                 if (stringAmountMap == null) {
                     stringAmountMap = new EnumMap<AMOUNT_TYPE, Amount>(AMOUNT_TYPE.class);
@@ -116,13 +121,14 @@ public class DayBook extends AbstractBahmniReport {
                     stringAmountMap.put(billed, amt);
                 }
                 if (Boolean.valueOf(resultSet.getString(3))) {
-                    amt.setTribal(resultSet.getDouble(1));
+                    double currValue = amt.getNonTribal();
+                    amt.setTribal(resultSet.getDouble(1)+currValue);
                 } else {
-                    amt.setNonTribal(resultSet.getDouble(1));
+                    double currValue = amt.getTribal();
+                    amt.setNonTribal(resultSet.getDouble(1)+currValue);
                 }
                 amt.setShopId(resultSet.getInt(2));
                 amt.setShopName(shopName);
-                resultSet.getDouble(1);
                 return null;
             }
         });
