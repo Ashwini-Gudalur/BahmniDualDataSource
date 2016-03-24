@@ -1,6 +1,8 @@
 package org.bahmni.custom.reports;
 
 import org.bahmni.custom.AbstractBahmniReport;
+import org.bahmni.custom.Util;
+import org.bahmni.custom.Utils;
 import org.bahmni.custom.data.Amount;
 import org.bahmni.custom.data.BahmniReportObject;
 import org.bahmni.custom.data.DepartmentReport;
@@ -107,6 +109,9 @@ public class DayBook extends AbstractBahmniReport {
         getErpJdbcTemplate().query(billedAmountQuery, new Object[]{getStartDate(),getEndDate()},new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
                 String shopName = resultSet.getString(4);
+                if (Utils.isEmptyString(shopName)){
+                    return null;
+                }
                 if (shopName.toLowerCase().startsWith(CASHPOINT_PREFIX.toLowerCase())){
                     shopName = CASHPOINT_PREFIX;
                 }
