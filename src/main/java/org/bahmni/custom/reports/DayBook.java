@@ -91,12 +91,13 @@ public class DayBook extends AbstractBahmniReport {
                     (billedAmount!=null)?billedAmount.getTribal():0,
                     (refundAmount!=null)?refundAmount.getTribal():0,
                     (dueAmount!=null)?dueAmount.getTribal():0);
+
             DepartmentReport.ReportLine total = new DepartmentReport.ReportLine(
-                    (discoutAmount!=null)?discoutAmount.getNonTribal():0+ ((discoutAmount!=null)?discoutAmount.getTribal():0),
-                    (collectedAmount!=null)?collectedAmount.getNonTribal():0+((collectedAmount!=null)?collectedAmount.getTribal():0),
-                    (billedAmount!=null)?billedAmount.getNonTribal():0+((billedAmount!=null)?billedAmount.getTribal():0),
-                    (refundAmount!=null)?refundAmount.getNonTribal():0+((refundAmount!=null)?refundAmount.getTribal():0),
-                    (dueAmount!=null)?dueAmount.getNonTribal():0+((dueAmount!=null)?dueAmount.getTribal():0));
+                    ((discoutAmount!=null)?discoutAmount.getNonTribal():0)+ ((discoutAmount!=null)?discoutAmount.getTribal():0),
+                    ((collectedAmount!=null)?collectedAmount.getNonTribal():0)+((collectedAmount!=null)?collectedAmount.getTribal():0),
+                    ((billedAmount!=null)?billedAmount.getNonTribal():0)+((billedAmount!=null)?billedAmount.getTribal():0),
+                    ((refundAmount!=null)?refundAmount.getNonTribal():0)+((refundAmount!=null)?refundAmount.getTribal():0),
+                    ((dueAmount!=null)?dueAmount.getNonTribal():0)+((dueAmount!=null)?dueAmount.getTribal():0));
             rpt.setTotal(total);
             rpt.setNonTribal(notTribal);
             rpt.setTribal(tribal);
