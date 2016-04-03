@@ -50,12 +50,18 @@ public class DayBook extends AbstractBahmniReport {
                 "GROUP BY so.shop_id,\"x_Is_Tribal\",ss.name ";
         setAmount(dueQuery, AMOUNT_TYPE.DUE, storeAmountMap);
 
-        String amtCollectedQry = "SELECT sum(avl.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name   from account_voucher_line avl" +
+        /*String amtCollectedQry = "SELECT sum(avl.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name   from account_voucher_line avl" +
                 "  INNER JOIN account_voucher av on av.id = avl.voucher_id and  avl.type='cr' " +
                 "and cast(av.date_string as DATE) between ? and ? " +
                 "INNER JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id " +
                 "  LEFT JOIN sale_shop ss on ss.id=av.shop_id " +
-                "GROUP BY shop_id,\"x_Is_Tribal\",ss.name  ";
+                "GROUP BY shop_id,\"x_Is_Tribal\",ss.name  ";*/
+
+        String amtCollectedQry = "SELECT sum(av.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name from account_voucher av " +
+                "  INNER JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id and " +
+                " cast(av.date_string as DATE) between ? and ? " +
+                "  LEFT JOIN sale_shop ss on ss.id=av.shop_id\n" +
+                "GROUP BY shop_id,\"x_Is_Tribal\",ss.name";
         setAmount(amtCollectedQry, AMOUNT_TYPE.COLLECTED, storeAmountMap);
         String amtRefundQry = "SELECT sum(avl.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name  from account_voucher_line avl " +
                 "  INNER JOIN account_voucher av on av.id = avl.voucher_id and  avl.type='dr' " +
