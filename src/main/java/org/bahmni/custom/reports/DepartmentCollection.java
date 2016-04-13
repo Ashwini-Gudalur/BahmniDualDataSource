@@ -380,6 +380,10 @@ public class DepartmentCollection  extends AbstractBahmniReport {
     }
 
     private Map<Integer, Integer> getCatAVLMap(Integer commonsId, String idcsv) {
+        final Map<Integer,Integer> soCatMap = new HashMap<Integer,Integer>();
+        if (Utils.isEmptyString(idcsv)){
+            return soCatMap;
+        }
         String opdCategQry = "SELECT sol.order_id,max(pt.categ_id) from sale_order_line sol " +
                 "LEFT JOIN product_product pp on pp.id = sol.product_id " +
                 "LEFT JOIN product_template pt on pt.id = pp.product_tmpl_id " +
@@ -387,7 +391,6 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 ") and order_id in (" +idcsv+
                 ") " +
                 "GROUP BY sol.order_id";
-        final Map<Integer,Integer> soCatMap = new HashMap<Integer,Integer>();
         getErpJdbcTemplate().query(opdCategQry, new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
                 soCatMap.put(resultSet.getInt(1),resultSet.getInt(2));
