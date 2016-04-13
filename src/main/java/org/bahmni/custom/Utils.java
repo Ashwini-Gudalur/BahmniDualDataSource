@@ -1,12 +1,12 @@
 package org.bahmni.custom;
 
-import com.jaspersoft.jasperserver.api.common.util.DateUtils;
 import org.bahmni.custom.data.SaleOrder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sandeepe on 02/03/16.
@@ -90,8 +90,22 @@ public class Utils {
         return list == null || list.size() == 0;
     }
 
+    public static boolean isEmptyMap(Map list) {
+        return list == null || list.size() == 0;
+    }
+
     public static boolean isEmptyString(String departmentForSO) {
         return departmentForSO==null || departmentForSO.length()==0 || departmentForSO.trim().length()==0;
+    }
+
+    public enum TRN_TYPE {DR, CR};
+    public static TRN_TYPE getTransactionType(String type) {
+        if ("dr".equals(type)) {
+            return TRN_TYPE.DR;
+        }else if ("cr".equals(type)) {
+            return TRN_TYPE.CR;
+        }
+        return TRN_TYPE.CR;
     }
 
 }

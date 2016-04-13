@@ -63,12 +63,11 @@ public class DayBook extends AbstractBahmniReport {
                 "  LEFT JOIN sale_shop ss on ss.id=av.shop_id\n" +
                 "GROUP BY shop_id,\"x_Is_Tribal\",ss.name";
         setAmount(amtCollectedQry, AMOUNT_TYPE.COLLECTED, storeAmountMap);
-        String amtRefundQry = "SELECT sum(avl.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name  from account_voucher_line avl " +
-                "  INNER JOIN account_voucher av on av.id = avl.voucher_id and  avl.type='dr' " +
-                "  and cast(av.date_string as DATE) between ? and ? " +
-                "INNER JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id " +
+        String amtRefundQry = "SELECT sum(av.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name from account_voucher av " +
+                "  INNER JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id and av.amount<0 " +
+                " cast(av.date_string as DATE) between ? and ? " +
                 "  LEFT JOIN sale_shop ss on ss.id=av.shop_id\n" +
-                "GROUP BY shop_id,\"x_Is_Tribal\",ss.name  ";
+                "GROUP BY shop_id,\"x_Is_Tribal\",ss.name";
         setAmount(amtRefundQry, AMOUNT_TYPE.REFUND, storeAmountMap);
         List<DepartmentReport> cosolidate = cosolidate(storeAmountMap);
         return cosolidate;

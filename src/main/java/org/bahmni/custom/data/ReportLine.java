@@ -17,11 +17,11 @@ public class ReportLine implements BahmniReportObject {
     private double totalCharityNonTribal;
     private double totalDueNonTribal;
 
-    private double billTotal;
+    /*private double billTotal;
     private double refundTotal;
     private double charityTotal;
     private double collectedTotal;
-    private double dueTotal;
+    private double dueTotal;*/
 
     public double getTotalDueTribal() {
         return totalDueTribal;
@@ -40,11 +40,7 @@ public class ReportLine implements BahmniReportObject {
     }
 
     public double getDueTotal() {
-        return dueTotal;
-    }
-
-    public void setDueTotal(double dueTotal) {
-        this.dueTotal = dueTotal;
+        return getTotalDueNonTribal()+getTotalDueTribal();
     }
 
     private String department;
@@ -114,36 +110,22 @@ public class ReportLine implements BahmniReportObject {
     }
 
     public double getBillTotal() {
-        return billTotal;
+        return billAmountNonTribal+billAmountTribal;
     }
 
-    public void setBillTotal(double billTotal) {
-        this.billTotal = billTotal;
-    }
 
     public double getRefundTotal() {
-        return refundTotal;
-    }
-
-    public void setRefundTotal(double refundTotal) {
-        this.refundTotal = refundTotal;
+        return refundAmountNonTribal+refundAmountTribal;
     }
 
     public double getCharityTotal() {
-        return charityTotal;
-    }
-
-    public void setCharityTotal(double charityTotal) {
-        this.charityTotal = charityTotal;
+        return totalCharityNonTribal+totalCharityTribal;
     }
 
     public double getCollectedTotal() {
-        return collectedTotal;
+        return paidAmountNonTribal+paidAmountTribal;
     }
 
-    public void setCollectedTotal(double collectedTotal) {
-        this.collectedTotal = collectedTotal;
-    }
 
     public String getDepartment() {
         return department;

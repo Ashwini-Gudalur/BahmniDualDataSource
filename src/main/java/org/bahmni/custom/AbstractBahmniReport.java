@@ -1,5 +1,7 @@
 package org.bahmni.custom;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bahmni.custom.data.BahmniReportObject;
 import org.bahmni.custom.data.DepartmentReport;
 import org.bahmni.custom.data.ReportLine;
@@ -16,6 +18,8 @@ import java.util.Map;
  * Created by sandeepe on 01/03/16.
  */
 public abstract class AbstractBahmniReport{
+
+    protected final Log logger = LogFactory.getLog(this.getClass());
 
     private DataSource erpDS;
     private DataSource emrDS;
@@ -136,11 +140,11 @@ public abstract class AbstractBahmniReport{
             }
             DepartmentReport.ReportLine total = departmentReport.getTotal();
             if (total!=null){
-                line.setBillTotal(total.getTotalAmount());
+                /*line.setBillTotal(total.getTotalAmount());
                 line.setCharityTotal(total.getCharity());
                 line.setCollectedTotal(total.getCollected());
                 line.setDueTotal(total.getDueAmount());
-                line.setRefundTotal(total.getRefundAmount());
+                line.setRefundTotal(total.getRefundAmount());*/
             }
             out.add(line);
         }
