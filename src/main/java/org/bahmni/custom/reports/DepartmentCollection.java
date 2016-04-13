@@ -676,6 +676,12 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         Map<String, ReportLine> saleOrdersForTodayWithDepartment = getSaleOrdersForTodayWithDepartment();
         for (Map.Entry<String, ReportLine> s : saleOrdersForTodayWithDepartment.entrySet()) {
             ReportLine value = s.getValue();
+            double paidAmountNonTribal = value.getPaidAmountNonTribal();
+            double paidAmountTribal = value.getPaidAmountTribal();
+            double refundAmountNonTribal = value.getRefundAmountNonTribal();
+            double refundAmountTribal = value.getRefundAmountTribal();
+            value.setPaidAmountNonTribal(paidAmountNonTribal-refundAmountNonTribal);
+            value.setPaidAmountTribal(paidAmountTribal-refundAmountTribal);
             value.setDepartment(s.getKey());
             ret.add(value);
         }
