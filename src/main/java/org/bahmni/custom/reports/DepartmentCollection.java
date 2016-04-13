@@ -44,7 +44,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 " LEFT JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id" +
                 " LEFT JOIN sale_order so on so.name = aml.ref" +
                 " where av.amount>0 and av.state='posted' " +
-                " and cast(av.date_string as DATE) between '2016-04-01' and '2016-04-13'";
+                " and cast(av.date_string as DATE) between ? and ? ";
 
         String accVouchersRefund = "SELECT av.id,av.amount,av.balance_amount,av.balance_before_pay,av.number," +
                 "  avl.id,avl.amount,avl.amount_unreconciled,avl.amount_original,avl.type," +
@@ -54,7 +54,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 " LEFT JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id" +
                 "  LEFT JOIN sale_order so on so.name = aml.ref" +
                 " where av.amount<0 and av.state='posted' " +
-                " and cast(av.date_string as DATE) between '2016-04-01' and '2016-04-13'";
+                " and cast(av.date_string as DATE) between ? and ? ";
         List<AccountVoucher> accountVouchersPay = parseAccountVouchers(accVouchersPay);
         List<AccountVoucher> accountVouchersRefund = parseAccountVouchers(accVouchersRefund);
 
@@ -230,14 +230,14 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         String charitySO = "SELECT so.id,discount_amount,rpa.\"x_Is_Tribal\" FROM sale_order so" +
                 "  LEFT JOIN res_partner_attributes rpa on rpa.partner_id=so.partner_id" +
                 " where state!='draft' and state!='cancel' and care_setting='" +caresetting+
-                "' and discount_amount>0 and cast(date_confirm as DATE) between '2016-04-01' and '2016-04-13'";
+                "' and discount_amount>0 and cast(date_confirm as DATE) between ? and ? ";
 
         return getCharitySOs(charitySO);
     }
 
     private List<AccountVoucherLine> getCharitySOs(String charitySO) {
         final List<AccountVoucherLine> charity = new LinkedList<AccountVoucherLine>();
-        getErpJdbcTemplate().query(charitySO, new RowMapper<AccountVoucherLine>() {
+        getErpJdbcTemplate().query(charitySO,new Object[]{getStartDate(),getEndDate()}, new RowMapper<AccountVoucherLine>() {
             public AccountVoucherLine mapRow(ResultSet resultSet, int i) throws SQLException {
                 AccountVoucherLine line = new AccountVoucherLine();
                 line.setSOId((resultSet.getInt(1)));
@@ -570,7 +570,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
 
     private List<AccountVoucher> parseAccountVouchers(String accVouchersPay) {
         final List<AccountVoucher> accountVouchers = new ArrayList<AccountVoucher>();
-        getErpJdbcTemplate().query(accVouchersPay, new RowMapper<AccountVoucher>() {
+        getErpJdbcTemplate().query(accVouchersPay,new Object[]{getStartDate(),getEndDate()}, new RowMapper<AccountVoucher>() {
             public AccountVoucher mapRow(ResultSet resultSet, int i) throws SQLException {
                 AccountVoucher voucher = new AccountVoucher();
                 voucher.setId(resultSet.getInt(1));
