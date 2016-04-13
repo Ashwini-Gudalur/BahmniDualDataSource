@@ -64,7 +64,7 @@ public class DayBook extends AbstractBahmniReport {
                 "GROUP BY shop_id,\"x_Is_Tribal\",ss.name";
         setAmount(amtCollectedQry, AMOUNT_TYPE.COLLECTED, storeAmountMap);
         String amtRefundQry = "SELECT sum(av.amount) as invoice,shop_id,rpa.\"x_Is_Tribal\",ss.name from account_voucher av " +
-                "  INNER JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id and av.amount<0 " +
+                "  INNER JOIN res_partner_attributes rpa on rpa.partner_id=av.partner_id and av.amount<0 and " +
                 " cast(av.date_string as DATE) between ? and ? " +
                 "  LEFT JOIN sale_shop ss on ss.id=av.shop_id\n" +
                 "GROUP BY shop_id,\"x_Is_Tribal\",ss.name";
