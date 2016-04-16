@@ -78,6 +78,21 @@ public class Utils {
         return false;
     }
 
+    public static String asCSV(List<Integer> sosWithJustOne) {
+            StringBuffer sb = new StringBuffer();
+            boolean first = true;
+            for (Integer integer : sosWithJustOne) {
+                if (first){
+                    first = false;
+                    sb.append(integer);
+                }else{
+                    sb.append(String.valueOf(",")+integer);
+                }
+            }
+            return sb.toString();
+
+    }
+
 
     public enum INV_TYPE {PAYMENT, REFUND};
     public enum INV_STATE {PAID, OPEN};

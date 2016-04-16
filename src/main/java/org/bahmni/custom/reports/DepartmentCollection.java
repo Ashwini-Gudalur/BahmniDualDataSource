@@ -421,6 +421,33 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 return null;
             }
         });
+
+
+        String soWithJustOneLineItem = "SELECT so.id,count(sol.order_id) from sale_order_line sol " +
+                "  INNER JOIN sale_order so on so.id=sol.order_id and so.id in ("  +idcsv+
+                ")" +
+                "GROUP BY so.id" +
+                "HAVING count(sol.order_id) = 1";
+        List<Integer> sosWithJustOne = getErpJdbcTemplate().query(soWithJustOneLineItem, new RowMapper<Integer>() {
+            public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
+                return resultSet.getInt(1);
+            }
+        });
+        if(!Utils.isEmptyList(sosWithJustOne)){
+//            TODO, repalce hardcoding later for product id
+            String soWithBookFee = "SELECT sol.order_id," +commonsId+
+                    " from sale_order_line sol" +
+                    " where sol.order_id in " +
+                    " (" +Utils.asCSV(sosWithJustOne)+
+                    ") and sol.product_id=2420 ";
+            getErpJdbcTemplate().query(soWithBookFee, new RowMapper<Void>() {
+                public Void mapRow(ResultSet resultSet, int i) throws SQLException {
+                    soCatMap.put(resultSet.getInt(1),resultSet.getInt(2));
+                    return null;
+                }
+            });
+        }
+
         return soCatMap;
     }
 
