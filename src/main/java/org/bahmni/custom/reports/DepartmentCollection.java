@@ -425,9 +425,9 @@ public class DepartmentCollection  extends AbstractBahmniReport {
 
         String soWithJustOneLineItem = "SELECT so.id,count(sol.order_id) from sale_order_line sol " +
                 "  INNER JOIN sale_order so on so.id=sol.order_id and so.id in ("  +idcsv+
-                ")" +
-                "GROUP BY so.id" +
-                "HAVING count(sol.order_id) = 1";
+                ") " +
+                " GROUP BY so.id " +
+                " HAVING count(sol.order_id) = 1";
         List<Integer> sosWithJustOne = getErpJdbcTemplate().query(soWithJustOneLineItem, new RowMapper<Integer>() {
             public Integer mapRow(ResultSet resultSet, int i) throws SQLException {
                 return resultSet.getInt(1);
