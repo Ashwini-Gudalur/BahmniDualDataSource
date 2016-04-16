@@ -61,8 +61,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         allocatePayedAmount(accountVouchersPay);
         allocatePayedAmount(accountVouchersRefund);
 
-        printAmountAllcation(accountVouchersPay, true);
-        printAmountAllcation(accountVouchersRefund, false);
+//        printAmountAllcation(accountVouchersPay, true);
+//        printAmountAllcation(accountVouchersRefund, false);
 
         List<AccountVoucherLine> opdAVLPayed = getSaleOrdersForPaymentForCareSetting(accountVouchersPay, "opd", true);
         List<AccountVoucherLine> ipdAVLPayed = getSaleOrdersForPaymentForCareSetting(accountVouchersPay, "ipd", true);
@@ -144,14 +144,38 @@ public class DepartmentCollection  extends AbstractBahmniReport {
 
         {
             double allocationForNeitherOpNorIPCrTribal = getAllocationForNeitherOpNorIP(accountVouchersPay, true, true);
+            if (allocationForNeitherOpNorIPCrTribal>0){
+                logger.error("Neither Op/Ip payment Tribal > 0" +allocationForNeitherOpNorIPCrTribal);
+            }
             double allocationForNeitherOpNorIPCrNonTribal = getAllocationForNeitherOpNorIP(accountVouchersPay, true, false);
+            if (allocationForNeitherOpNorIPCrNonTribal>0){
+                logger.error("Neither Op/Ip payment Non Tribal > 0" +allocationForNeitherOpNorIPCrNonTribal);
+            }
             double allocationForNeitherOpNorIPDrTribal = getAllocationForNeitherOpNorIP(accountVouchersRefund, false, true);
+            if (allocationForNeitherOpNorIPDrTribal>0){
+                logger.error("Neither Op/Ip Refund Non Tribal > 0" +allocationForNeitherOpNorIPDrTribal);
+            }
             double allocationForNeitherOpNorIPDrNonTribal = getAllocationForNeitherOpNorIP(accountVouchersRefund, false, false);
+            if (allocationForNeitherOpNorIPDrNonTribal>0){
+                logger.error("Neither Op/Ip Refund Non Tribal > 0" +allocationForNeitherOpNorIPDrNonTribal);
+            }
 
             double tribalMissingIPDDeptPayment = getMissingIPDDeptPayment("cr", true);
+            if (tribalMissingIPDDeptPayment>0){
+                logger.error("Missing SO Dept Payment Tribal > 0" +tribalMissingIPDDeptPayment);
+            }
             double nonTribalMissingIPDDeptPayment = getMissingIPDDeptPayment("cr", false);
+            if (nonTribalMissingIPDDeptPayment>0){
+                logger.error("Missing SO Dept Payment Non Tribal > 0" +nonTribalMissingIPDDeptPayment);
+            }
             double tribalMissingIPDDeptRefund = getMissingIPDDeptPayment("dr", true);
+            if (tribalMissingIPDDeptRefund>0){
+                logger.error("Missing SO Dept Payment Tribal > 0" +tribalMissingIPDDeptRefund);
+            }
             double nonTribalMissingIPDDeptRefund = getMissingIPDDeptPayment("dr", false);
+            if (nonTribalMissingIPDDeptRefund>0){
+                logger.error("Missing SO Dept Payment Non Tribal > 0" +nonTribalMissingIPDDeptRefund);
+            }
 
             ReportLine lineO = new ReportLine();
             lineO.setPaidAmountTribal(tribalMissingIPDDeptPayment + getOtherPaymentFromVoucher(accountVouchersPay, true) + allocationForNeitherOpNorIPCrTribal);
@@ -159,7 +183,6 @@ public class DepartmentCollection  extends AbstractBahmniReport {
             lineO.setRefundAmountTribal(tribalMissingIPDDeptRefund + getOtherRefundFromVoucher(accountVouchersRefund, true) + allocationForNeitherOpNorIPDrTribal);
             lineO.setRefundAmountNonTribal(nonTribalMissingIPDDeptRefund + getOtherRefundFromVoucher(accountVouchersRefund, false) + allocationForNeitherOpNorIPDrNonTribal);
             deptPayedAmt.put("Others", lineO);
-
 
             lineO.setTotalDueNonTribal(getDueFromVoucher(accountVouchersRefund, false));
             lineO.setTotalDueTribal(getDueFromVoucher(accountVouchersRefund, true));
@@ -354,6 +377,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         if(!Utils.isEmptyList(accountVouchersPay)) {
             for (AccountVoucher avl : accountVouchersPay) {
                 if (avl.getTribal()==tribal){
+
                     total += (avl.getPaymentWithoutReason());
                 }
             }
@@ -477,6 +501,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 if (voucher.getAmount()<0){
                     if(voucher.getBalanceAmount()<=0) {
                         if (Utils.isEmptyList(voucher.getDrLines())) {
+                            logger.error("Adding Full amount to Others Refund "+ -1 * voucher.getAmount()+ " for Voucher:"+voucher.getNumber());
                             voucher.setRefundWithoutReason(-1 * voucher.getAmount()+voucher.getRefundWithoutReason());
                         } else {
                             double amountInvoucher = -1 * voucher.getAmount();
@@ -490,12 +515,14 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                                 }
                             }
                             if (amountInvoucher > 0) {
+                                logger.error("Adding remaining amount to Others Refund "+ amountInvoucher+ " for Voucher:"+voucher.getNumber());
                                 voucher.setRefundWithoutReason(amountInvoucher+voucher.getRefundWithoutReason());
                             }
                         }
                         processed = true;
                     }else if (voucher.getBalanceAmount()>0){
                         if (Utils.isEmptyList(voucher.getDrLines())) {
+                            logger.error("Adding Full amount to Others Refund (balance>0) "+ -1 * voucher.getAmount()+ " for Voucher:"+voucher.getNumber());
                             voucher.setRefundWithoutReason(-1 * voucher.getAmount()+voucher.getRefundWithoutReason());
                         }else {
                             double amountInvoucher = -1 * voucher.getAmount();
@@ -509,6 +536,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                                 }
                             }
                             if (amountInvoucher > 0) {
+                                logger.error("Adding remaining amount to Others Refund (balance>0) "+ amountInvoucher+ " for Voucher:"+voucher.getNumber());
                                 voucher.setRefundWithoutReason(amountInvoucher+voucher.getRefundWithoutReason());
                             }
                         }
@@ -526,6 +554,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 if (voucher.getAmount()>0){
                     if(voucher.getBalanceAmount()>=0) {
                         if (Utils.isEmptyList(voucher.getCrLines())) {
+                            logger.error("Adding Full amount to Others Payment "+ voucher.getAmount()+ " for Voucher:"+voucher.getNumber());
                             voucher.setPaymentWithoutReason(voucher.getAmount()+voucher.getPaymentWithoutReason());
 //                            TODO: Split to due payment without SO if needed
                         } else {
@@ -540,12 +569,14 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                                 }
                             }
                             if (amountInvoucher > 0) {
+                                logger.error("Adding remaining amount to Others Payment "+ amountInvoucher+ " for Voucher:"+voucher.getNumber());
                                 voucher.setPaymentWithoutReason(amountInvoucher+voucher.getPaymentWithoutReason());
                             }
                         }
                         processed = true;
                     }else if (voucher.getBalanceAmount()<0){
                         if (Utils.isEmptyList(voucher.getCrLines())) {
+                            logger.error("Adding Full amount to Others Payment (balance<0)"+ voucher.getAmount()+ " for Voucher:"+voucher.getNumber());
                             voucher.setPaymentWithoutReason(voucher.getAmount()+voucher.getPaymentWithoutReason());
                         }else {
                             double amountInvoucher = voucher.getAmount();
@@ -559,6 +590,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                                 }
                             }
                             if (amountInvoucher > 0) {
+                                logger.error("Adding remaining amount to Others Payment (balance<0) "+ amountInvoucher+ " for Voucher:"+voucher.getNumber());
                                 voucher.setPaymentWithoutReason(amountInvoucher+voucher.getPaymentWithoutReason());
                             }
                         }
@@ -566,7 +598,6 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                         processed = true;
                     }
                 }
-            logger.error("Vocher "+voucher.getId()+ " processed="+processed);
             processed=false;
         }
     }

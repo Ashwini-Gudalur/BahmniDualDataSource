@@ -97,7 +97,6 @@ public class BahmniDualDataSource implements JRDataSource {
 		try {
 			BahmniReportObject map = nodes.get(index);
 			Object value = PropertyUtils.getProperty(map, jrField.getName());
-			System.out.println("Sandeep:value for object:" + value + "  " + jrField.getName());
 			return value;
 		} catch (Exception e) {
 			throw new JRException("Exception getting field with for " + jrField.getName(), e);
