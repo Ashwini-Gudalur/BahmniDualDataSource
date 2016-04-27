@@ -18,6 +18,16 @@ public class AccountVoucherLine {
     private int SOId;
     private Integer categoryId;
 
+    public String getVoucherNumber() {
+        return voucherNumber;
+    }
+
+    public void setVoucherNumber(String voucherNumber) {
+        this.voucherNumber = voucherNumber;
+    }
+
+    private String voucherNumber;
+
     public void setId(int id) {
         this.id = id;
     }

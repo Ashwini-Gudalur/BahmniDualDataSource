@@ -1,16 +1,11 @@
 package org.bahmni.custom.reports;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bahmni.custom.AbstractBahmniReport;
-import org.bahmni.custom.Util;
 import org.bahmni.custom.Utils;
 import org.bahmni.custom.data.AccountVoucher;
 import org.bahmni.custom.data.AccountVoucherLine;
-import org.bahmni.custom.data.BahmniReportObject;
 import org.bahmni.custom.data.ReportLine;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -118,7 +113,9 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         Map<String, ReportLine> deptPayedAmt = new HashMap<String,ReportLine>();
         for (Map.Entry<String, List<AccountVoucherLine>> dept : departmentOpdPaymentAVL.entrySet()) {
             ReportLine amt = new ReportLine();
+            logger.error("Setting Paid Amount Non Tribal For dept " +dept.getKey());
             amt.setPaidAmountNonTribal(getAmountFromAVL(dept.getValue(), false));
+            logger.error("Setting Paid Amount Tribal For dept " + dept.getKey());
             amt.setPaidAmountTribal(getAmountFromAVL(dept.getValue(), true));
             deptPayedAmt.put(dept.getKey(), amt);
 
@@ -129,15 +126,21 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 reportLine = new ReportLine();
                 deptPayedAmt.put(dept.getKey(), reportLine);
             }
+            logger.error("Setting Refund Amount Non Tribal For dept " +dept.getKey());
             reportLine.setRefundAmountNonTribal(getAmountFromAVL(dept.getValue(), false));
+            logger.error("Setting Refund Amount Tribal For dept " + dept.getKey());
             reportLine.setRefundAmountTribal(getAmountFromAVL(dept.getValue(), true));
         }
 
         {
             ReportLine line = new ReportLine();
+            logger.error("Setting Refund Amount Tribal For dept IP ");
             line.setRefundAmountTribal(getAmountFromAVL(ipdAVLRefund, true));
+            logger.error("Setting Refund Amount Non Tribal For dept IP");
             line.setRefundAmountNonTribal(getAmountFromAVL(ipdAVLRefund, false));
+            logger.error("Setting Paid Amount Tribal For dept IP");
             line.setPaidAmountTribal(getAmountFromAVL(ipdAVLPayed, true));
+            logger.error("Setting Paid Amount Non Tribal For dept IP");
             line.setPaidAmountNonTribal(getAmountFromAVL(ipdAVLPayed, false));
             deptPayedAmt.put("IP", line);
         }
@@ -145,42 +148,46 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         {
             double allocationForNeitherOpNorIPCrTribal = getAllocationForNeitherOpNorIP(accountVouchersPay, true, true);
             if (allocationForNeitherOpNorIPCrTribal>0){
-                logger.error("Neither Op/Ip payment Tribal > 0" +allocationForNeitherOpNorIPCrTribal);
+                logger.error("Neither Op/Ip payment Tribal > 0  " +allocationForNeitherOpNorIPCrTribal);
             }
             double allocationForNeitherOpNorIPCrNonTribal = getAllocationForNeitherOpNorIP(accountVouchersPay, true, false);
             if (allocationForNeitherOpNorIPCrNonTribal>0){
-                logger.error("Neither Op/Ip payment Non Tribal > 0" +allocationForNeitherOpNorIPCrNonTribal);
+                logger.error("Neither Op/Ip payment Non Tribal > 0  " +allocationForNeitherOpNorIPCrNonTribal);
             }
             double allocationForNeitherOpNorIPDrTribal = getAllocationForNeitherOpNorIP(accountVouchersRefund, false, true);
             if (allocationForNeitherOpNorIPDrTribal>0){
-                logger.error("Neither Op/Ip Refund Non Tribal > 0" +allocationForNeitherOpNorIPDrTribal);
+                logger.error("Neither Op/Ip Refund Non Tribal > 0  " +allocationForNeitherOpNorIPDrTribal);
             }
             double allocationForNeitherOpNorIPDrNonTribal = getAllocationForNeitherOpNorIP(accountVouchersRefund, false, false);
             if (allocationForNeitherOpNorIPDrNonTribal>0){
-                logger.error("Neither Op/Ip Refund Non Tribal > 0" +allocationForNeitherOpNorIPDrNonTribal);
+                logger.error("Neither Op/Ip Refund Non Tribal > 0  " +allocationForNeitherOpNorIPDrNonTribal);
             }
 
-            double tribalMissingIPDDeptPayment = getMissingIPDDeptPayment("cr", true);
+            double tribalMissingIPDDeptPayment = getMissingOPDDeptPayment("cr", true);
             if (tribalMissingIPDDeptPayment>0){
-                logger.error("Missing SO Dept Payment Tribal > 0" +tribalMissingIPDDeptPayment);
+                logger.error("Missing SO Dept Payment Tribal > 0  " +tribalMissingIPDDeptPayment);
             }
-            double nonTribalMissingIPDDeptPayment = getMissingIPDDeptPayment("cr", false);
+            double nonTribalMissingIPDDeptPayment = getMissingOPDDeptPayment("cr", false);
             if (nonTribalMissingIPDDeptPayment>0){
-                logger.error("Missing SO Dept Payment Non Tribal > 0" +nonTribalMissingIPDDeptPayment);
+                logger.error("Missing SO Dept Payment Non Tribal > 0  " +nonTribalMissingIPDDeptPayment);
             }
-            double tribalMissingIPDDeptRefund = getMissingIPDDeptPayment("dr", true);
+            double tribalMissingIPDDeptRefund = getMissingOPDDeptPayment("dr", true);
             if (tribalMissingIPDDeptRefund>0){
-                logger.error("Missing SO Dept Payment Tribal > 0" +tribalMissingIPDDeptRefund);
+                logger.error("Missing SO Dept Payment Tribal > 0  " +tribalMissingIPDDeptRefund);
             }
-            double nonTribalMissingIPDDeptRefund = getMissingIPDDeptPayment("dr", false);
+            double nonTribalMissingIPDDeptRefund = getMissingOPDDeptPayment("dr", false);
             if (nonTribalMissingIPDDeptRefund>0){
-                logger.error("Missing SO Dept Payment Non Tribal > 0" +nonTribalMissingIPDDeptRefund);
+                logger.error("Missing SO Dept Payment Non Tribal > 0  " +nonTribalMissingIPDDeptRefund);
             }
 
             ReportLine lineO = new ReportLine();
+            logger.error("Setting Paid Amount Tribal For dept Others");
             lineO.setPaidAmountTribal(tribalMissingIPDDeptPayment + getOtherPaymentFromVoucher(accountVouchersPay, true) + allocationForNeitherOpNorIPCrTribal);
+            logger.error("Setting Paid Amount Non Tribal For dept Others");
             lineO.setPaidAmountNonTribal(nonTribalMissingIPDDeptPayment + getOtherPaymentFromVoucher(accountVouchersPay, false) + allocationForNeitherOpNorIPCrNonTribal);
+            logger.error("Setting Refund Amount Tribal For dept Others");
             lineO.setRefundAmountTribal(tribalMissingIPDDeptRefund + getOtherRefundFromVoucher(accountVouchersRefund, true) + allocationForNeitherOpNorIPDrTribal);
+            logger.error("Setting Refund Amount Non Tribal For dept Others");
             lineO.setRefundAmountNonTribal(nonTribalMissingIPDDeptRefund + getOtherRefundFromVoucher(accountVouchersRefund, false) + allocationForNeitherOpNorIPDrNonTribal);
             deptPayedAmt.put("Others", lineO);
 
@@ -201,18 +208,24 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 reportLine = new ReportLine();
                 deptPayedAmt.put(dept.getKey(),reportLine);
             }
+            logger.error("Setting Charity Amount Non Tribal For dept " +dept.getKey());
             reportLine.setTotalCharityNonTribal(getAmountFromAVL(dept.getValue(), false));
+            logger.error("Setting Charity Amount Tribal For dept " + dept.getKey());
             reportLine.setTotalCharityTribal(getAmountFromAVL(dept.getValue(), true));
         }
         {
             ReportLine others = deptPayedAmt.get("Others");
-            others.setTotalCharityNonTribal(getAmountFromAVL(opdDeptMissingSOs,false));
+            logger.error("Setting Charity Amount Non Tribal For dept Others");
+            others.setTotalCharityNonTribal(getAmountFromAVL(opdDeptMissingSOs, false));
+            logger.error("Setting Charity Amount Tribal For dept Others");
             others.setTotalCharityTribal(getAmountFromAVL(opdDeptMissingSOs,true));
         }
         {
             List<AccountVoucherLine> ipCharity = getAVLFromSO("ipd");
             ReportLine ip = deptPayedAmt.get("IP");
+            logger.error("Setting Charity Amount Tribal For dept IP");
             ip.setTotalCharityTribal(getAmountFromAVL(ipCharity, true));
+            logger.error("Setting Charity Amount Non Tribal For dept IP");
             ip.setTotalCharityNonTribal(getAmountFromAVL(ipCharity, false));
         }
 
@@ -273,12 +286,15 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         return charity;
     }
 
-    private double getMissingIPDDeptPayment(String cr, boolean tribal) {
+    private double getMissingOPDDeptPayment(String cr, boolean tribal) {
         double total = 0;
         if(!Utils.isEmptyList(opdDeptMissingAVLs)){
             for (AccountVoucherLine opdDeptMissingAVL : opdDeptMissingAVLs) {
                 if (opdDeptMissingAVL.getTribal()==tribal &&
                         opdDeptMissingAVL.getType()==Utils.getTransactionType(cr)) {
+                    logger.error("MissingOPDDeptPayment " + opdDeptMissingAVL.getVoucherNumber()+" for amount "
+                            +opdDeptMissingAVL.getAllocation()
+                            + " For Tribal "+opdDeptMissingAVL.getTribal()+" For paytype = "+cr);
                     total+=opdDeptMissingAVL.getAllocation();
                 }
             }
@@ -303,6 +319,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                         if("ipd".equalsIgnoreCase(soCareSetting)||"opd".equalsIgnoreCase(soCareSetting)){
 
                         }else{
+                            logger.error("Neither IP Nor OP " + voucher.getNumber()+" for amount "+accountVoucherLine.getAmount()
+                                +" for SO "+accountVoucherLine.getSOName() + "  For Tribal "+voucher.getTribal());
                             total+=accountVoucherLine.getAllocation();
                         }
                     }
@@ -327,7 +345,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
 
             }else{
                 for (AccountVoucherLine accountVoucherLine : accountVoucherLines) {
-                    logger.error("SO="+accountVoucherLine.getSOName() + " Allocation="+accountVoucherLine.getAllocation());
+                    logger.error("SO="+accountVoucherLine.getSOName() + " Allocation="+accountVoucherLine.getAllocation()
+                            + " Voucher="+accountVoucherLine.getVoucherNumber());
                     total+=accountVoucherLine.getAllocation();
                 }
             }
@@ -341,6 +360,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         if(!Utils.isEmptyList(accountVouchersPay)) {
             for (AccountVoucher avl : accountVouchersPay) {
                 if (avl.getTribal()==tribal){
+                    logger.error("Other Refunds (Refunds Without Reason)" + avl.getNumber()+" for amount "+avl.getPaymentWithoutReason()
+                            + " For Tribal "+avl.getTribal());
                     total += (avl.getRefundWithoutReason());
                 }
             }
@@ -377,7 +398,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         if(!Utils.isEmptyList(accountVouchersPay)) {
             for (AccountVoucher avl : accountVouchersPay) {
                 if (avl.getTribal()==tribal){
-
+                    logger.error("Other Payments (Payment Without Reason)" + avl.getNumber()+" for amount "+avl.getPaymentWithoutReason()
+                        + " For Tribal "+avl.getTribal());
                     total += (avl.getPaymentWithoutReason());
                 }
             }
@@ -500,6 +522,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
             if (!Utils.isEmptyList(accountVoucherLines)){
                 for (AccountVoucherLine accountVoucherLine : accountVoucherLines) {
                     if (careSetting.equalsIgnoreCase(accountVoucherLine.getSOCareSetting())){
+                        logger.error("AVL , Voucher Assosiation " + voucher.getNumber()+" for pay type "+cr
+                                + " For Tribal "+voucher.getTribal() +" with SO : "+accountVoucherLine.getSOName());
                         lines.add(accountVoucherLine);
                     }
                 }
@@ -662,6 +686,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 line.setSOCareSetting((resultSet.getString(12)));
                 line.setSOId((resultSet.getInt(13)));
                 line.setTribal(Boolean.valueOf(resultSet.getString(14)));
+                line.setVoucherNumber(voucher.getNumber());
                 if (line.getType().equals(Utils.TRN_TYPE.CR)){
                     voucher.addCrLine(line);
                 }else{
@@ -681,6 +706,8 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         if(!Utils.isEmptyList(invoices)) {
             for (AccountVoucherLine avl : invoices) {
                 if (avl.getTribal()==tribal){
+                    logger.error("AVL  for voucher" + avl.getVoucherNumber()+" For Tribal "+avl.getTribal()
+                            +" with SO : "+avl.getSOName() +" With allocation "+avl.getAllocation());
                     total += (avl.getAllocation());
                 }
             }
@@ -698,7 +725,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
         for (AccountVoucherLine avl : saleOrderCatMap) {
             String departmentForSO = getDepartmentForSO(avl.getCategoryId(), deptCatMap);
             if (Utils.isEmptyString(departmentForSO)){
-                logger.error("No Department found for SO, " + avl.getSOName());
+                logger.error("No Department found for SO, " + avl.getSOName() + " for Payment: "+avl.getVoucherNumber());
                 if(so){
                     opdDeptMissingSOs.add(avl);
                 }else{
