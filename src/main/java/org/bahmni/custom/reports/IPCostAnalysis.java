@@ -32,7 +32,7 @@ public class IPCostAnalysis extends AbstractBahmniReport{
                 "                                       sol.create_date BETWEEN vsr.visit_startdate AND vsr.visit_stopdate AND " +
                 "                                       sol.order_partner_id = vsr.erp_patient_id " +
                 "                                       AND vsr.visit_type_id = 1 AND " +
-                "                                       vsr.visit_stopdate BETWEEN '2016-01-01' AND '2016-06-01' " +
+                "                                       vsr.visit_stopdate BETWEEN ? AND ? " +
                 "        LEFT JOIN sale_order_tax sot ON sol.id = sot.order_line_id " +
                 "        LEFT JOIN account_tax at ON at.id = sot.tax_id " +
                 "        LEFT JOIN res_partner_attributes rpa ON sol.order_partner_id = rpa.partner_id " +
@@ -45,12 +45,12 @@ public class IPCostAnalysis extends AbstractBahmniReport{
                 "                              FROM syncjob_chargetype_category_mapping " +
                 "                              WHERE chargetype_name = '" +type+
                 "')) " +
-                "            AND (sol.create_date BETWEEN '2016-01-01' AND '2016-06-01') " +
+                "            AND (sol.create_date BETWEEN ? AND ?) " +
                 "            AND (sol.state = 'confirmed') " +
                 "      GROUP BY sol.id, sol.order_partner_id, rpa.\"x_Is_Tribal\") AS sale_details " +
                 "GROUP BY tribal";
         final IPCostItem item = new IPCostItem();
-        getErpJdbcTemplate().query(sql, new RowMapper<Void>() {
+        getErpJdbcTemplate().query(sql, new Object[]{getStartDate(),getEndDate(),getStartDate(),getEndDate()}, new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
                 if(Boolean.valueOf(resultSet.getString(2))){
                     item.setTribalAmt(item.getTribalAmt()+resultSet.getDouble(1));
@@ -80,10 +80,10 @@ public class IPCostAnalysis extends AbstractBahmniReport{
     IPCostItem getTotalPatientCount(){
         String sql = "select count(visit_uuid),rpa.\"x_Is_Tribal\" as tribal from syncjob_visit vsr " +
                 " LEFT JOIN res_partner_attributes rpa ON vsr.erp_patient_id = rpa.partner_id " +
-                "where vsr.visit_type_id = 1 and vsr.visit_stopdate BETWEEN '2016-01-01' AND '2016-06-01' " +
+                "where vsr.visit_type_id = 1 and vsr.visit_stopdate BETWEEN ? AND ? " +
                 "GROUP BY tribal";
         final IPCostItem item = new IPCostItem();
-        getErpJdbcTemplate().query(sql, new RowMapper<Void>() {
+        getErpJdbcTemplate().query(sql,new Object[]{getStartDate(),getEndDate()}, new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
                 if(Boolean.valueOf(resultSet.getString(2))){
                     item.setTribalCount(item.getTribalCount() + resultSet.getDouble(1));
@@ -102,10 +102,10 @@ public class IPCostAnalysis extends AbstractBahmniReport{
                 "  INNER JOIN visit_so_payment_rln t on t.visit_id = sv.id " +
                 " LEFT JOIN res_partner_attributes rpa ON sv.erp_patient_id = rpa.partner_id " +
                 "where " +
-                " sv.visit_type_id = 1 and sv.visit_stopdate BETWEEN '2016-01-01' AND '2016-06-01' " +
+                " sv.visit_type_id = 1 and sv.visit_stopdate BETWEEN ? AND ? " +
                 "GROUP BY tribal";
         final IPCostItem item = new IPCostItem();
-        getErpJdbcTemplate().query(sql, new RowMapper<Void>() {
+        getErpJdbcTemplate().query(sql,new Object[]{getStartDate(),getEndDate()}, new RowMapper<Void>() {
             public Void mapRow(ResultSet resultSet, int i) throws SQLException {
                 if(Boolean.valueOf(resultSet.getString(2))){
                     item.setTribalAmt(item.getTribalAmt() + resultSet.getDouble(1));
@@ -153,7 +153,9 @@ public class IPCostAnalysis extends AbstractBahmniReport{
         difference.setNonTribalAmt(total.getNonTribalAmt() - paidAmount.getNonTribalAmt());
         difference.setTribalAmt(total.getTribalAmt() - paidAmount.getTribalAmt());
         ret.add(difference);
-        System.out.println(totalPatientCount);
+        totalPatientCount.setType("Total Patient Count");
+        ret.add(totalPatientCount);
+//        System.out.println(totalPatientCount);
         return ret;
     }
 
