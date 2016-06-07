@@ -516,7 +516,6 @@ public class DepartmentCollection  extends AbstractBahmniReport {
             logger.error("Empty list or map " + accountVouchersPay);
             return lines;
         }
-
         for (AccountVoucher voucher : accountVouchersPay) {
             List<AccountVoucherLine> accountVoucherLines = cr ? voucher.getCrLines() : voucher.getDrLines();
             if (!Utils.isEmptyList(accountVoucherLines)){
@@ -660,7 +659,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 AccountVoucher voucher = new AccountVoucher();
                 voucher.setId(resultSet.getInt(1));
                 int contains = accountVouchers.indexOf(voucher);
-                if (contains<1){
+                if (contains<0){
                     voucher.setAmount(resultSet.getDouble(2));
                     voucher.setBalanceAmount(resultSet.getDouble(3));
                     voucher.setBalanceBefore(resultSet.getDouble(4));
