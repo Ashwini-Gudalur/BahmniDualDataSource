@@ -263,7 +263,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
     }
 
     private List<AccountVoucherLine> getAVLFromSO(String caresetting) {
-        String charitySO = "SELECT so.id,discount_amount,rpa.\"x_Is_Tribal\" FROM sale_order so" +
+        String charitySO = "SELECT so.id,discount_amount,rpa.\"x_Is_Tribal\",so.name FROM sale_order so" +
                 "  LEFT JOIN res_partner_attributes rpa on rpa.partner_id=so.partner_id" +
                 " where state!='draft' and state!='cancel' and care_setting='" +caresetting+
                 "' and discount_amount>0 and cast(date_confirm as DATE) between ? and ? ";
@@ -279,6 +279,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
                 line.setSOId((resultSet.getInt(1)));
                 line.setAllocation(resultSet.getDouble(2));
                 line.setTribal(Boolean.valueOf(resultSet.getString(3)));
+                line.setSOName(resultSet.getString(4));                
                 charity.add(line);
                 return null;
             }
@@ -516,6 +517,7 @@ public class DepartmentCollection  extends AbstractBahmniReport {
             logger.error("Empty list or map " + accountVouchersPay);
             return lines;
         }
+
         for (AccountVoucher voucher : accountVouchersPay) {
             List<AccountVoucherLine> accountVoucherLines = cr ? voucher.getCrLines() : voucher.getDrLines();
             if (!Utils.isEmptyList(accountVoucherLines)){
