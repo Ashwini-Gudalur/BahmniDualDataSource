@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * Created by sandeepe on 11/03/16.
  */
-public class SickleCellPatientsDepartmentwiseCollection  extends AbstractBahmniReport {
+public class StaffPatientsDepartmentwiseCollection  extends AbstractBahmniReport {
 
     private List<AccountVoucherLine> opdDeptMissingAVLs = new ArrayList<AccountVoucherLine>();
     private List<AccountVoucherLine> opdDeptMissingSOs = new ArrayList<AccountVoucherLine>();
@@ -40,7 +40,7 @@ public class SickleCellPatientsDepartmentwiseCollection  extends AbstractBahmniR
                 " LEFT JOIN sale_order so on so.name = aml.ref" +
                 " where av.amount>0 and av.state='posted' " +
                 " and cast(av.date_string as DATE) between ? and ? " +
-                " and rpa.x_patientcategory = 'Sickle Cell Patients' ";
+                " and rpa.x_patientcategory = 'Staffs' ";
 
         String accVouchersRefund = "SELECT av.id,av.amount,av.balance_amount,av.balance_before_pay,av.number," +
                 "  avl.id,avl.amount,avl.amount_unreconciled,avl.amount_original,avl.type," +
@@ -51,7 +51,7 @@ public class SickleCellPatientsDepartmentwiseCollection  extends AbstractBahmniR
                 "  LEFT JOIN sale_order so on so.name = aml.ref" +
                 " where av.amount<0 and av.state='posted' " +
                 " and cast(av.date_string as DATE) between ? and ? " +
-                " and rpa.x_patientcategory = 'Sickle Cell Patients' ";
+                " and rpa.x_patientcategory = 'Staffs' ";
 
         List<AccountVoucher> accountVouchersPay = parseAccountVouchers(accVouchersPay);
         List<AccountVoucher> accountVouchersRefund = parseAccountVouchers(accVouchersRefund);
@@ -269,7 +269,7 @@ public class SickleCellPatientsDepartmentwiseCollection  extends AbstractBahmniR
         String charitySO = "SELECT so.id,discount_amount,rpa.\"x_Is_Tribal\",so.name FROM sale_order so" +
                 "  LEFT JOIN res_partner_attributes rpa on rpa.partner_id=so.partner_id" +
                 " where state!='draft' and state!='cancel' and care_setting='" +caresetting+
-                "' AND rpa.x_patientcategory = 'Sickle Cell Patients'" +
+                "' and rpa.x_patientcategory = 'Staffs' " +
                 " and discount_amount>0 and cast(date_confirm as DATE) between ? and ? ";
 
         return getCharitySOs(charitySO);
